@@ -281,7 +281,7 @@ else {
 if (!($ADApplicationID)) {   
     Write-Host "🔑 Creating Fulfilment API App Registration"
     try {   
-        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "Maven Fulfillment API (poc)" | ConvertFrom-Json
+        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "Maven Fulfillment API (dev)" | ConvertFrom-Json
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
@@ -305,7 +305,7 @@ if (!($ADApplicationIDAdmin)) {
 	
 		$appCreateRequestBodyJson = @"
 {
-	"displayName" : "Maven Admin Portal (poc)",
+	"displayName" : "Maven Admin Portal (dev)",
 	"api": 
 	{
 		"requestedAccessTokenVersion" : 2
@@ -316,12 +316,12 @@ if (!($ADApplicationIDAdmin)) {
 		"redirectUris": 
 		[
 			
-			"https://app-mavenadminportal-poc-westeu.azurewebsites.net",
-			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/",
-			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/Home/Index",
-			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/Home/Index/"
+			"https://app-mavenadminportal-dev-westeu.azurewebsites.net",
+			"https://app-mavenadminportal-dev-westeu.azurewebsites.net/",
+			"https://app-mavenadminportal-dev-westeu.azurewebsites.net/Home/Index",
+			"https://app-mavenadminportal-dev-westeu.azurewebsites.net/Home/Index/"
 		],
-		"logoutUrl": "https://app-mavenadminportal-poc-westeu.azurewebsites.net/logout",
+		"logoutUrl": "https://app-mavenadminportal-dev-westeu.azurewebsites.net/logout",
 		"implicitGrantSettings": 
 			{ "enableIdTokenIssuance" : true }
 	},
@@ -383,7 +383,7 @@ if (!($ADMTApplicationIDPortal)) {
 	
 		$appCreateRequestBodyJson = @"
 {
-	"displayName" : "Maven Customer Portal (poc)",
+	"displayName" : "Maven Customer Portal (dev)",
 	"api": 
 	{
 		"requestedAccessTokenVersion" : 2
@@ -393,13 +393,13 @@ if (!($ADMTApplicationIDPortal)) {
 	{ 
 		"redirectUris": 
 		[
-			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net",
-			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/",
-			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/Home/Index",
-			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/Home/Index/"
+			"https://app-mavencustomerportal-dev-westeu.azurewebsites.net",
+			"https://app-mavencustomerportal-dev-westeu.azurewebsites.net/",
+			"https://app-mavencustomerportal-dev-westeu.azurewebsites.net/Home/Index",
+			"https://app-mavencustomerportal-dev-westeu.azurewebsites.net/Home/Index/"
 			
 		],
-		"logoutUrl": "https://app-mavencustomerportal-poc-westeu.azurewebsites.net/logout",
+		"logoutUrl": "https://app-mavencustomerportal-dev-westeu.azurewebsites.net/logout",
 		"implicitGrantSettings": 
 			{ "enableIdTokenIssuance" : true }
 	},
@@ -478,8 +478,8 @@ Write-host "☁ Deploy Azure Resources"
 
 #Set-up resource name variables
 $WebAppNameService=$WebAppNamePrefix+"-saas-asp"
-$WebAppNameAdmin="app-mavenadminportal-poc-westeu"
-$WebAppNamePortal="app-mavencustomerportal-poc-westeu"
+$WebAppNameAdmin="app-mavenadminportal-dev-westeu"
+$WebAppNamePortal="app-mavencustomerportal-dev-westeu"
 $VnetName=$WebAppNamePrefix+"-vnet"
 $privateSqlEndpointName=$WebAppNamePrefix+"-db-pe"
 $privateKvEndpointName=$WebAppNamePrefix+"-kv-pe"
@@ -550,7 +550,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://app-mavenadminportal-poc-westeu.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://app-mavenadminportal-dev-westeu.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
@@ -562,7 +562,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://app-mavencustomerportal-poc-westeu.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://app-mavencustomerportal-dev-westeu.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
 
 #endregion
