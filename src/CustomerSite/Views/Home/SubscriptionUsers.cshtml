@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionUsers>
+<!DOCTYPE html>
+
+@{
+    ViewData["Title"] = "Subscription Users";
+}
+<style>
+    .cst-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-left: 0;
+    }
+    .cst-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .cst-back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .cst-back-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<div class="container">
+    <div class="">
+        <div class="card-body">
+            <div class="text-left">
+                <span class="cm-section-heading">Subscription Users</span>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    var subscription = Model.FirstOrDefault().Subscription;
+                    <div class="cst-container">
+                        <div class="cst-title">@subscription.AmpsubscriptionId - @subscription.Name</div>
+                        <a class="cst-back-button" asp-area="" asp-controller="Home" asp-action="Subscriptions">&#x25c0; Subscriptions</a>
+
+                    </div>
+                }
+            </div>
+            <div id="myModal">
+                <form id="formSubUsers" method="post">
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        <div class="table-responsive mt20">
+                            <table class="table table-bordered dt-responsive cm-table" table id="tblSubUsers" width="100%" cellspacing="0">
+                                <thead class="cm-table-head">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>User Email</th>
+                                        <th></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var subUsers in Model)
+                                    {
+                                        <tr>
+                                            <td>@subUsers.FullName</td>
+                                            <td>@subUsers.UserEmail</td>
+                                            <td><a class="cst-back-button" asp-area="" asp-controller="Home" asp-action="UserMeteringLogs" asp-route-userId="@subUsers.Id">Logs</a></td>
+                                        </tr>
+                                    }
+                                </tbody>                            
+                            </table>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
