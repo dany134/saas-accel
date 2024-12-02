@@ -281,7 +281,7 @@ else {
 if (!($ADApplicationID)) {   
     Write-Host "🔑 Creating Fulfilment API App Registration"
     try {   
-        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
+        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "Maven Fulfillment API (poc)" | ConvertFrom-Json
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
@@ -305,7 +305,7 @@ if (!($ADApplicationIDAdmin)) {
 	
 		$appCreateRequestBodyJson = @"
 {
-	"displayName" : "$WebAppNamePrefix-AdminPortalAppReg",
+	"displayName" : "Maven Admin Portal (poc)",
 	"api": 
 	{
 		"requestedAccessTokenVersion" : 2
@@ -316,12 +316,12 @@ if (!($ADApplicationIDAdmin)) {
 		"redirectUris": 
 		[
 			
-			"https://$WebAppNamePrefix-admin.azurewebsites.net",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+			"https://app-mavenadminportal-poc-westeu.azurewebsites.net",
+			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/",
+			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/Home/Index",
+			"https://app-mavenadminportal-poc-westeu.azurewebsites.net/Home/Index/"
 		],
-		"logoutUrl": "https://$WebAppNamePrefix-admin.azurewebsites.net/logout",
+		"logoutUrl": "https://app-mavenadminportal-poc-westeu.azurewebsites.net/logout",
 		"implicitGrantSettings": 
 			{ "enableIdTokenIssuance" : true }
 	},
@@ -383,7 +383,7 @@ if (!($ADMTApplicationIDPortal)) {
 	
 		$appCreateRequestBodyJson = @"
 {
-	"displayName" : "$WebAppNamePrefix-LandingpageAppReg",
+	"displayName" : "Maven Customer Portal (poc)",
 	"api": 
 	{
 		"requestedAccessTokenVersion" : 2
@@ -393,13 +393,13 @@ if (!($ADMTApplicationIDPortal)) {
 	{ 
 		"redirectUris": 
 		[
-			"https://$WebAppNamePrefix-portal.azurewebsites.net",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
+			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net",
+			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/",
+			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/Home/Index",
+			"https://app-mavencustomerportal-poc-westeu.azurewebsites.net/Home/Index/"
 			
 		],
-		"logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
+		"logoutUrl": "https://app-mavencustomerportal-poc-westeu.azurewebsites.net/logout",
 		"implicitGrantSettings": 
 			{ "enableIdTokenIssuance" : true }
 	},
@@ -477,9 +477,9 @@ if (!(Test-Path '../Publish')) {
 Write-host "☁ Deploy Azure Resources"
 
 #Set-up resource name variables
-$WebAppNameService=$WebAppNamePrefix+"-asp"
-$WebAppNameAdmin=$WebAppNamePrefix+"-admin"
-$WebAppNamePortal=$WebAppNamePrefix+"-portal"
+$WebAppNameService=$WebAppNamePrefix+"-saas-asp"
+$WebAppNameAdmin="app-mavenadminportal-poc-westeu"
+$WebAppNamePortal="app-mavencustomerportal-poc-westeu"
 $VnetName=$WebAppNamePrefix+"-vnet"
 $privateSqlEndpointName=$WebAppNamePrefix+"-db-pe"
 $privateKvEndpointName=$WebAppNamePrefix+"-kv-pe"
@@ -501,14 +501,14 @@ $Connection="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";Trus
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
-az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
+#az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
 
 Write-host "      ➡️ Create VNET and Subnet"
-az network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput 
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $SqlSubnetName --address-prefixes "10.0.2.0/24"  --output $azCliOutput 
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $KvSubnetName --address-prefixes "10.0.3.0/24"   --output $azCliOutput 
+#az network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
+#az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
+#az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput 
+#az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $SqlSubnetName --address-prefixes "10.0.2.0/24"  --output $azCliOutput 
+#az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $KvSubnetName --address-prefixes "10.0.3.0/24"   --output $azCliOutput 
 
 Write-host "      ➡️ Create Sql Server"
 $userId = az ad signed-in-user show --query id -o tsv 
@@ -525,7 +525,7 @@ if ($env:ACC_CLOUD -eq $null){
 }
 
 Write-host "      ➡️ Create SQL DB"
-az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
+az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Basic  --capacity 5 --zone-redundant false --output $azCliOutput
 
 Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
@@ -534,12 +534,12 @@ Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
 Write-host "      ➡️ Update Firewall"
-az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
-az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
+#az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
+#az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
-az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --output $azCliOutput
+az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku F1 --output $azCliOutput
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Create Web App"
@@ -589,9 +589,9 @@ Write-host "   🔵 Deploy Code to Customer Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
 
 Write-host "   🔵 Update Firewall for WebApps and SQL"
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
-az sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
+#az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+#az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+#az sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
@@ -602,37 +602,37 @@ Remove-Item -Path script.sql
 
 #region Create SQL Private Endpoints
 # Get SQL Server
-$sqlServerId=az sql server show --name $SQLServerName --resource-group $ResourceGroupForDeployment --query id -o tsv
+#$sqlServerId=az sql server show --name $SQLServerName --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a private endpoint
-az network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
+#az network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
 
 
 # Create a SQL private DNS zone
-az network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
+#az network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
 
 # Link the SQL private DNS zone to the VNet
-az network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
+#az network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
+#az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
 #endregion
 
 
 #region Create KV Private Endpoints
 # Get KV Server
-$keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
+#$keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a KV private endpoint
-az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
+#az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
 
 
 # Create a KV private DNS zone
-az network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
+#az network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
 
 # Link the KV private DNS zone to the VNet
-az network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
+#az network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
+#az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
 #endregion
 
 
@@ -642,21 +642,21 @@ az network private-endpoint dns-zone-group create --resource-group $ResourceGrou
 Write-host "✅ If the intallation completed without error complete the folllowing checklist:"
 if ($ISLoginAppProvided) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 	Write-host "   🔵 Add The following URLs to the multi-tenant Landing Page AAD App Registration in Azure Portal:"
-	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net"
-	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/"
-	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
-	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
+	Write-host "      ➡️ https://app-mavencustomerportal-dev-westeu.azurewebsites.net"
+	Write-host "      ➡️ https://app-mavencustomerportal-dev-westeu.azurewebsites.net/"
+	Write-host "      ➡️ https://app-mavencustomerportal-dev-westeu.azurewebsites.net/Home/Index"
+	Write-host "      ➡️ https://app-mavencustomerportal-dev-westeu.azurewebsites.net/Home/Index/"
 	Write-host "   🔵 Add The following URLs to the multi-tenant Admin Portal AAD App Registration in Azure Portal:"
-	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net"
-	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net/"
-	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"
-	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+	Write-host "      ➡️ https://app-mavenadminportal-dev-westeu.azurewebsites.net"
+	Write-host "      ➡️ https://app-mavenadminportal-dev-westeu.azurewebsites.net/"
+	Write-host "      ➡️ https://app-mavenadminportal-dev-westeu.azurewebsites.net/Home/Index"
+	Write-host "      ➡️ https://app-mavenadminportal-dev-westeu.azurewebsites.net/Home/Index/"
 	Write-host "   🔵 Verify ID Tokens checkbox has been checked-out ?"
 }
 
 Write-host "   🔵 Add The following URL in PartnerCenter SaaS Technical Configuration"
-Write-host "      ➡️ Landing Page section:       https://$WebAppNamePrefix-portal.azurewebsites.net/"
-Write-host "      ➡️ Connection Webhook section: https://$WebAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
+Write-host "      ➡️ Landing Page section:       https://app-mavencustomerportal-dev-westeu.azurewebsites.net/"
+Write-host "      ➡️ Connection Webhook section: https://app-mavencustomerportal-dev-westeu.azurewebsites.net/api/AzureWebhook"
 Write-host "      ➡️ Tenant ID:                  $TenantID"
 Write-host "      ➡️ AAD Application ID section: $ADApplicationID"
 $duration = (Get-Date) - $startTime
